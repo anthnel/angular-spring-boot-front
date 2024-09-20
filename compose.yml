@@ -1,0 +1,19 @@
+services:
+  front:
+    image: asbfront
+    build: 
+      context: .
+      args:
+        SPW_NEXUS_REGISTRY: $SPW_NEXUS_REGISTRY
+    ports:
+      - "80:80"
+
+  back:
+    image: asbback
+    build:
+      context: ../asbback
+      dockerfile: ../asbback/Dockerfile
+      args:
+        SPW_NEXUS_REGISTRY: $SPW_NEXUS_REGISTRY
+    ports:
+      - "8080:8080"
