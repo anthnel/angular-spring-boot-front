@@ -59,13 +59,17 @@ We are using [lite-server](https://github.com/johnpapa/lite-server) for this
 ```
 # Install lite-server globally
 npm install --global lite-server
-# Create a BrowserSync config file in config/bs-config.json :
-#   {
-#        "port": 4200,
-#       "server": { "baseDir": "./dist/asbfront/browser" }
-#   }
+
+# Create a BrowserSync config file in config/bs-config.json with this content:
+
+   {
+        "port": 4200,
+       "server": { "baseDir": "./dist/asbfront/browser" }
+   }
+
 # Build the app
 ng build
+
 # Run it 
 lite-server -c config/bs-config.json
 ```
@@ -77,3 +81,76 @@ lite-server -c config/bs-config.json
 docker compose up -d
 # As a nginx server (without specific configuration) is included in the front images, just head to http://localhost/index.html
 ```
+
+## Add CI
+
+### Configure Karma and sonarQube
+
+```
+# Generate a karma.conf.js file
+ng generate config karma
+
+# Add these 2 packages
+npm install --save-dev karma-junit-reporter
+npm install --save-dev karma-sonarqube-execution-reporter
+
+# Replace the coverageReporter section in karma.conf.js with this :
+
+    coverageReporter: {
+      dir: 'reports',
+      subdir: '.',
+      reporters: [
+        // 'text-summary' to let GitLab grab coverage from stdout
+        {type: "text-summary"},
+        // 'cobertura' to enable GitLab test coverage visualization
+        {type: 'cobertura', file: 'ng-coverage.cobertura.xml'},
+        // 'lcovonly' to enable SonarQube test coverage reporting
+        {type: 'lcovonly', file: 'ng-coverage.lcov.info'}
+      ],
+    },
+
+# Add a junitReporter section in karma.conf.js with this :
+
+    junitReporter: {
+      outputDir: 'reports',
+      outputFile: 'ng-test.xunit.xml',
+      useBrowserName: false,
+    },
+
+# Add a sonarQubeExecutionReporter section in karma.conf.js with this :
+
+    sonarQubeExecutionReporter: {
+      outputDir: 'reports',
+      outputFile: 'ng-test.sonar.xml',
+    },
+
+# Add a sonar-project.properties file with this :
+
+    # see: https://docs.sonarqube.org/latest/analyzing-source-code/test-coverage/javascript-typescript-test-coverage/
+    # set your source directory(ies) here (relative to the sonar-project.properties file)
+    sonar.sources=src/app
+    # exclude unwanted directories and files from being analysed
+    sonar.exclusions=node_modules/**,dist/**,**/*.spec.ts
+
+    # set your tests directory(ies) here (relative to the sonar-project.properties file)
+    sonar.tests=src/app
+    sonar.test.inclusions=**/*.spec.ts
+
+    # tests report: generic format
+    sonar.testExecutionReportPaths=reports/ng-test.sonar.xml
+    # lint report: TSLint JSON
+    #sonar.typescript.tslint.reportPaths=reports/ng-lint.tslint.json
+    sonar.typescript.eslint.reportPaths=reports/ng-lint.tslint.json
+    # coverage report: LCOV format
+    sonar.typescript.lcov.reportPaths=reports/ng-coverage.lcov.info
+
+```
+
+### Add lint
+
+```
+# Install the linter by running this command
+ng lint
+```
+
+### Add .gitlab-ci.yml

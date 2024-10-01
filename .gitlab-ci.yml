@@ -1,0 +1,39 @@
+variables:
+  NPM_PUBLISH_TOKEN: $SPW_NEXUS_NPM_PRIVATE_TOKEN
+  NPM_PUBLISH_REGISTRY: $SPW_NEXUS_NPM_PRIVATE_REGISTRY
+  SONAR_HOST_URL: $SPW_SONAR_HOST_URL
+  SONAR_TOKEN: $SPW_SONAR_TOKEN
+  SONAR_PROJECT_KEY: $CI_PROJECT_NAME
+  CNB_REGISTRY_SNAPSHOT_USER: $CI_REGISTRY_USER
+  CNB_REGISTRY_SNAPSHOT_PASSWORD: $CI_REGISTRY_PASSWORD
+  CNB_REGISTRY_RELEASE_USER: $SPW_NEXUS_USER
+  CNB_REGISTRY_RELEASE_PASSWORD: $SPW_NEXUS_PASSWORD
+
+stages:
+  - build
+  - test
+  - package-build
+  - package-test
+  - deploy
+  - publish
+
+
+include:
+  - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/angular/gitlab-ci-angular@d4.9.1
+    inputs:
+      cli-image: "$SPW_NEXUS_REGISTRY/trion/ng-cli-karma:18.2.1"
+      npm-config-registry: $SPW_NEXUS_NPM_REGISTRY
+      test-args: test --code-coverage --reporters progress,junit,sonarqubeUnit --watch=false --no-progress
+      lint-args: lint --force
+      publish-enabled: true
+
+  - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/sonar/gitlab-ci-sonar@4.2.3
+
+  - component: "$CI_SERVER_FQDN/devsecops/to-be-continuous/gitleaks/gitlab-ci-gitleaks@2.6"
+
+sonar:
+  needs:
+    - job: ng-build
+      artifacts: true
+    - job: ng-lint
+      artifacts: true
