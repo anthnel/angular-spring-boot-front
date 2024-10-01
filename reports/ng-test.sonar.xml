@@ -1,0 +1,17 @@
+<testExecutions version="1">
+  <file path="src/app/services/employee.service.spec.ts">
+    <testCase name="EmployeeService dummy test" duration="2"/>
+  </file>
+  <file path="src/app/employee.model.spec.ts">
+    <testCase name="Employee dummy test" duration="1"/>
+  </file>
+  <file path="src/app/app.component.spec.ts">
+    <testCase name="AppComponent dummy test" duration="1"/>
+  </file>
+  <file path="src/app/employee-list/employee-list.component.spec.ts">
+    <testCase name="EmployeeListComponent dummy test" duration="1"/>
+  </file>
+  <file path="src/app/employee-form/employee-form.component.spec.ts">
+    <testCase name="EmployeeFormComponent dummy test" duration="1"/>
+  </file>
+</testExecutions>

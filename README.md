@@ -109,6 +109,11 @@ npm install --save-dev karma-sonarqube-execution-reporter
       ],
     },
 
+# Add these 2 plugin in the plugins section in karma.conf.js
+
+      require('karma-junit-reporter'),
+      require('karma-sonarqube-execution-reporter'),
+
 # Add a junitReporter section in karma.conf.js with this :
 
     junitReporter: {
