@@ -25,11 +25,25 @@ include:
       npm-config-registry: $SPW_NEXUS_NPM_REGISTRY
       test-args: test --code-coverage --reporters progress,junit,sonarqubeUnit --watch=false --no-progress
       lint-args: lint --force
-      publish-enabled: true
+      publish-enabled: false # As it's an application (not a package)
 
   - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/sonar/gitlab-ci-sonar@4.2.3
 
   - component: "$CI_SERVER_FQDN/devsecops/to-be-continuous/gitleaks/gitlab-ci-gitleaks@2.6"
+
+  - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/cnb/gitlab-ci-cnb@2.4.2
+    inputs:
+      builder-image: "$SPW_NEXUS_REGISTRY/heroku/builder:24"
+      trivy-image: "$SPW_NEXUS_REGISTRY/aquasec/trivy:latest"
+      # We should use the nexus proxy for skopeo as well ; so the docker group should be updated
+      #skopeo-image: "$SPW_NEXUS_REGISTRY/quay.io/skopeo/stable:latest" 
+      release-image: $SPW_NEXUS_DOCKER_PRIVATE_REGISTRY/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+      prod-publish-strategy: none # Disable publish on main branch
+
+  - component: "$CI_SERVER_FQDN/devsecops/to-be-continuous/semantic-release/gitlab-ci-semrel@3.11"
+    inputs:
+      commit-spec: "conventionalcommits"
+      tag-format: "$${version}"
 
 sonar:
   needs:
