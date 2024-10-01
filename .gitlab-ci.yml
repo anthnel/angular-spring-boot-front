@@ -19,7 +19,7 @@ stages:
 
 
 include:
-  - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/angular/gitlab-ci-angular@d4.9.1
+  - component: $CI_SERVER_FQDN/devsecops/to-be-continuous/angular/gitlab-ci-angular@4.9.1
     inputs:
       cli-image: "$SPW_NEXUS_REGISTRY/trion/ng-cli-karma:18.2.1"
       npm-config-registry: $SPW_NEXUS_NPM_REGISTRY
