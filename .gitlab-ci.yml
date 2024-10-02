@@ -36,7 +36,7 @@ include:
       builder-image: "$SPW_NEXUS_REGISTRY/heroku/builder:24"
       trivy-image: $SPW_NEXUS_REGISTRY/aquasec/trivy:latest
       trivy-security-level-threshold: CRITICAL
-      trivy-args: "--offline-scan --ignore-unfixed"
+      trivy-args: "--offline-scan --ignore-unfixed --show-suppressed"
       trivy-db-repository: $SPW_NEXUS_REGISTRY/aquasecurity/trivy-db
       trivy-java-db-repository: $SPW_NEXUS_REGISTRY/aquasecurity/trivy-java-db
       skopeo-image: $SPW_NEXUS_REGISTRY/skopeo/stable:latest
